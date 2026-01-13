@@ -40,12 +40,17 @@ hr { margin: .6rem 0 1.1rem 0; }
 
 # ========= 数据文件相对路径（与本文件同目录）=========
 HERE = pathlib.Path(__file__).resolve().parent
-TRAIN_XLSX = HERE / "training set1.xlsx"     # ⚠️ 文件名需与仓库/本地一致
+TRAIN_XLSX = HERE / "training set1.xlsx"     # ⚠️ 请在仓库中放入新的 HCM MACES ECR 训练集，文件名保持一致
 
 PATHS = {
     "ECR": {
         "train": str(TRAIN_XLSX),
-        "best": {"hidden": [64], "dropout": 0.3205834974859022, "lr": 0.0016603175384760594}
+        # ✅ 使用你现在的 DeepSurv 最优超参数
+        "best": {
+            "hidden":  [64, 32],
+            "dropout": 0.3307393997187421,
+            "lr":      0.0019682753218161443
+        }
     }
 }
 
@@ -93,8 +98,14 @@ def read_ecr_dataset(path: str):
     return X, df["time"].values.astype("float32"), df["event"].values.astype("bool"), df
 
 # ========= 训练 DeepSurv =========
-def fit_ecr_deepsurv(X: pd.DataFrame, time: np.ndarray, event: np.ndarray,
-                     hidden=[64], dropout=0.32, lr=0.00166):
+def fit_ecr_deepsurv(
+    X: pd.DataFrame,
+    time: np.ndarray,
+    event: np.ndarray,
+    hidden  = [64, 32],
+    dropout = 0.3307393997187421,
+    lr      = 0.0019682753218161443
+):
     from sklearn.preprocessing import StandardScaler
     _set_seed(RANDOM_STATE)
 
